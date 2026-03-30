@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  admin
+  agent
+}
+
+enum SessionStatus {
+  waiting
+  active
+  closed
+}
+
+enum SenderType {
+  customer
+  agent
+  system
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  displayName  String   @map("display_name")
+  role         Role     @default(agent)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdRobots Robot[]   @relation("CreatedBy")
+  sessions      Session[] @relation("AgentSessions")
+
+  @@map("users")
+}
+
+model Robot {
+  id          String   @id @default(cuid())
+  imUserId    String   @unique @map("im_user_id")
+  name        String
+  displayName String   @map("display_name")
+  secret      String
+  callbackUrl String?  @map("callback_url")
+  createdById String   @map("created_by_id")
+  createdBy   User     @relation("CreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  sessions Session[]
+
+  @@map("robots")
+}
+
+model Session {
+  id           String        @id @default(cuid())
+  customerId   String        @map("customer_id")
+  customerName String        @default("Unknown") @map("customer_name")
+  robotId      String        @map("robot_id")
+  robot        Robot         @relation(fields: [robotId], references: [id])
+  agentId      String?       @map("agent_id")
+  agent        User?         @relation("AgentSessions", fields: [agentId], references: [id])
+  status       SessionStatus @default(waiting)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  closedAt     DateTime?     @map("closed_at")
+
+  messages Message[]
+
+  @@map("sessions")
+}
+
+model Message {
+  id          String     @id @default(cuid())
+  sessionId   String     @map("session_id")
+  session     Session    @relation(fields: [sessionId], references: [id])
+  senderType  SenderType @map("sender_type")
+  senderId    String     @map("sender_id")
+  contentType Int        @default(1) @map("content_type")
+  content     String
+  imMessageId String?    @map("im_message_id")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@index([sessionId, createdAt])
+  @@map("messages")
+}
