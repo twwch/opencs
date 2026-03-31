@@ -17,11 +17,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { name, displayName, callbackUrl } = await request.json();
+  const { name, displayName } = await request.json();
 
   if (!name || !displayName) {
     return NextResponse.json({ error: "名称和显示名不能为空" }, { status: 400 });
   }
+
+  // Callback URL that IM Server (inside Docker) can reach
+  const callbackBase = process.env.WEBHOOK_CALLBACK_BASE || "http://host.docker.internal:3000";
+  const callbackUrl = `${callbackBase}/api/webhook/robot`;
 
   // Call Wildfire Admin API to create robot on IM server
   const imResult = await createRobot({
@@ -40,10 +44,8 @@ export async function POST(request: Request) {
 
   const { userId: imUserId, secret } = imResult.result!;
 
-  // Set callback URL if provided
-  if (callbackUrl) {
-    await setRobotCallback(imUserId, secret, callbackUrl);
-  }
+  // Set callback via Robot API as well (belt and suspenders)
+  await setRobotCallback(imUserId, secret, callbackUrl);
 
   // Save to our database
   const robot = await prisma.robot.create({

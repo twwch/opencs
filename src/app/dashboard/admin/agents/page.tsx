@@ -22,33 +22,36 @@ export default function AgentsPage() {
   useEffect(() => { loadAgents(); }, [loadAgents]);
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">客服管理</h1>
+    <div className="p-6 space-y-5">
+      <div>
+        <h1 className="text-lg font-semibold text-[#0F172A]">客服管理</h1>
+        <p className="mt-0.5 text-xs text-[#94A3B8]">管理客服人员账号</p>
+      </div>
 
       <AgentForm onCreated={loadAgents} />
 
-      <div className="rounded-lg border border-gray-200 bg-white">
+      <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
         <table className="w-full text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">显示名称</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">用户名</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-600">创建时间</th>
+          <thead>
+            <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
+              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">显示名称</th>
+              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">用户名</th>
+              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">创建时间</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {agents.map((a) => (
-              <tr key={a.id}>
-                <td className="px-4 py-3">{a.displayName}</td>
-                <td className="px-4 py-3 text-gray-500">{a.username}</td>
-                <td className="px-4 py-3 text-gray-500">
+              <tr key={a.id} className="border-b border-[#F1F5F9] transition hover:bg-[#F8FAFC]">
+                <td className="px-4 py-3 font-medium text-[#0F172A]">{a.displayName}</td>
+                <td className="px-4 py-3 font-mono text-xs text-[#64748B]">{a.username}</td>
+                <td className="px-4 py-3 text-xs text-[#94A3B8]">
                   {new Date(a.createdAt).toLocaleString("zh-CN")}
                 </td>
               </tr>
             ))}
             {agents.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={3} className="px-4 py-8 text-center text-sm text-[#CBD5E1]">
                   暂无客服
                 </td>
               </tr>

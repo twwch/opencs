@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { eventBus } from "@/lib/event-bus";
+import { getUserInfo } from "@/lib/wildfire";
 
 interface WildfireMessage {
   messageId: number;
@@ -29,8 +30,18 @@ export async function POST(request: Request) {
 
   const robotImUserId = msg.conv.target;
   const customerId = msg.sender;
-  const customerName = msg.senderUserInfo?.displayName || customerId;
   const content = msg.payload.searchableContent || msg.payload.content || "";
+
+  // Get customer display name — from callback payload or fallback to Admin API
+  let customerName = msg.senderUserInfo?.displayName || "";
+  if (!customerName) {
+    try {
+      const info = await getUserInfo(customerId);
+      customerName = info.result?.displayName || customerId;
+    } catch {
+      customerName = customerId;
+    }
+  }
 
   // Find the robot in our database
   const robot = await prisma.robot.findUnique({

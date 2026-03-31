@@ -81,6 +81,22 @@ export async function robotSendMessage(
   });
 }
 
+export async function getOnlineUsers(): Promise<{ code: number; result?: string[] }> {
+  return adminPost("/admin/user/online_list", {});
+}
+
+export async function getUserInfo(
+  userId: string
+): Promise<{ code: number; result?: { userId: string; name: string; displayName: string; portrait?: string } }> {
+  return adminPost("/admin/user/get_info", { userId });
+}
+
+export async function getUserInfoBatch(
+  userIds: string[]
+): Promise<{ code: number; result?: Array<{ userId: string; name: string; displayName: string; portrait?: string }> }> {
+  return adminPost("/admin/user/get_infos", { userIds });
+}
+
 export async function setRobotCallback(
   robotId: string,
   secret: string,

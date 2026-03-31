@@ -7,7 +7,8 @@ export async function middleware(request: NextRequest) {
   if (
     pathname === "/login" ||
     pathname.startsWith("/api/auth/login") ||
-    pathname.startsWith("/api/webhook")
+    pathname.startsWith("/api/webhook") ||
+    pathname.startsWith("/api/test")
   ) {
     return NextResponse.next();
   }

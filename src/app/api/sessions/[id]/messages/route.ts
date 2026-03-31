@@ -64,14 +64,18 @@ export async function POST(
 
   // Send via Wildfire Robot API
   try {
-    await robotSendMessage(
+    const imResult = await robotSendMessage(
       csSession.robot.imUserId,
       csSession.robot.secret,
       csSession.customerId,
       { type: 1, searchableContent: content }
     );
+    if (imResult?.code !== undefined && imResult.code !== 0) {
+      console.error("Wildfire send failed:", imResult);
+    }
   } catch (err) {
-    console.error("Failed to send via Wildfire:", err);
+    console.error("Wildfire Robot API unreachable:", err);
+    // IM Server 不可用时仍然保存本地消息，但在控制台记录错误
   }
 
   eventBus.emit("cs-event", {

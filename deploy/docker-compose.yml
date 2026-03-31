@@ -1,0 +1,42 @@
+services:
+  im-server:
+    image: twwch/wildfirechat-im-server:latest
+    container_name: wfc-im-server
+    ports:
+      - "80:80"       # 客户端 HTTP（固定端口）
+      - "1883:1883"   # MQTT 长连接
+      - "8083:8083"   # WebSocket
+      - "8084:8084"   # WebSocket SSL
+      - "18080:18080" # Admin API
+    environment:
+      - JVM_XMX=256M
+      - JVM_XMS=256M
+    volumes:
+      - im-server-config:/opt/im-server/config
+      - im-server-logs:/opt/im-server/logs
+      - im-server-h2db:/opt/im-server/h2db
+      - im-server-media:/opt/im-server/media
+    restart: unless-stopped
+
+  app-server:
+    image: twwch/wildfirechat-app-server:latest
+    container_name: wfc-app-server
+    ports:
+      - "8888:8888"   # App 登录/注册 API
+    environment:
+      - JVM_XMX=256M
+      - JVM_XMS=256M
+    volumes:
+      - app-server-config:/opt/app-server/config
+      - app-server-h2db:/opt/app-server/h2db
+    depends_on:
+      - im-server
+    restart: unless-stopped
+
+volumes:
+  im-server-config:
+  im-server-logs:
+  im-server-h2db:
+  im-server-media:
+  app-server-config:
+  app-server-h2db:

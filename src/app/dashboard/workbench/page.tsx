@@ -123,12 +123,22 @@ export default function WorkbenchPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="w-72 border-r border-gray-200 bg-white">
-        <div className="flex items-center justify-between border-b border-gray-200 px-3 py-3">
-          <span className="text-sm font-medium text-gray-900">会话列表</span>
-          <span className={`h-2 w-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`} />
+    <div className="flex h-full overflow-hidden">
+      {/* Session list panel */}
+      <div className="w-[264px] border-r border-[#E2E8F0] bg-white">
+        {/* Search bar */}
+        <div className="border-b border-[#E2E8F0] px-3 py-2.5">
+          <div className="flex items-center gap-2 rounded-xl bg-[#F1F5F9] px-3 py-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+            </svg>
+            <span className="text-xs text-[#CBD5E1]">搜索会话…</span>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className={`h-1.5 w-1.5 rounded-full ${connected ? "bg-[#22C55E]" : "bg-[#EF4444]"}`} />
+            </div>
+          </div>
         </div>
+
         <SessionList
           sessions={sessions}
           activeSessionId={activeSession?.id || null}
@@ -137,6 +147,7 @@ export default function WorkbenchPage() {
         />
       </div>
 
+      {/* Chat area */}
       <div className="flex-1">
         {activeSession ? (
           <ChatPanel
@@ -147,8 +158,11 @@ export default function WorkbenchPage() {
             onClose={handleClose}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-gray-400">
-            选择一个会话开始服务
+          <div className="flex h-full flex-col items-center justify-center text-[#CBD5E1]">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-3 opacity-50">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span className="text-sm">选择一个会话开始服务</span>
           </div>
         )}
       </div>
