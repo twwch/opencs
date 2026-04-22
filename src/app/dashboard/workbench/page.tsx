@@ -13,7 +13,7 @@ interface Session {
   agentId: string | null;
   createdAt: string;
   agent?: { displayName: string } | null;
-  robot?: { displayName: string };
+  bot?: { displayName: string };
   _count?: { messages: number };
 }
 

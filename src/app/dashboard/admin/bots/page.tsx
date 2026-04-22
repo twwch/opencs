@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { RobotForm } from "@/components/robot-form";
+import { BotForm } from "@/components/bot-form";
 
-interface Robot {
+interface Bot {
   id: string;
   imUserId: string;
   name: string;
   displayName: string;
-  callbackUrl: string | null;
+  avatarUrl?: string | null;
   createdAt: string;
   createdBy: { displayName: string };
 }
@@ -19,19 +19,19 @@ interface IMUser {
   name: string;
 }
 
-export default function RobotsPage() {
-  const [robots, setRobots] = useState<Robot[]>([]);
+export default function BotsPage() {
+  const [bots, setBots] = useState<Bot[]>([]);
   const [imUsers, setImUsers] = useState<IMUser[]>([]);
-  const [greetRobotId, setGreetRobotId] = useState<string | null>(null);
+  const [greetBotId, setGreetBotId] = useState<string | null>(null);
   const [targetUserId, setTargetUserId] = useState("");
   const [greetMsg, setGreetMsg] = useState("");
   const [greetLoading, setGreetLoading] = useState(false);
   const [greetResult, setGreetResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
-  const loadRobots = useCallback(async () => {
-    const res = await fetch("/api/admin/robots");
+  const loadBots = useCallback(async () => {
+    const res = await fetch("/api/admin/bots");
     const data = await res.json();
-    setRobots(data.robots);
+    setBots(data.bots);
   }, []);
 
   const loadImUsers = useCallback(async () => {
@@ -40,15 +40,15 @@ export default function RobotsPage() {
     setImUsers(data.users || []);
   }, []);
 
-  useEffect(() => { loadRobots(); }, [loadRobots]);
+  useEffect(() => { loadBots(); }, [loadBots]);
 
   // Load IM users when greet panel opens
   useEffect(() => {
-    if (greetRobotId) loadImUsers();
-  }, [greetRobotId, loadImUsers]);
+    if (greetBotId) loadImUsers();
+  }, [greetBotId, loadImUsers]);
 
   async function handleGreet() {
-    if (!greetRobotId || !targetUserId) return;
+    if (!greetBotId || !targetUserId) return;
     setGreetLoading(true);
     setGreetResult(null);
 
@@ -56,18 +56,18 @@ export default function RobotsPage() {
     const userName = selectedUser?.displayName || targetUserId;
 
     try {
-      const res = await fetch("/api/admin/robots/greet", {
+      const res = await fetch("/api/admin/bots/greet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          robotId: greetRobotId,
+          botId: greetBotId,
           targetUserId,
           message: greetMsg.trim() || undefined,
         }),
       });
 
       if (res.ok) {
-        setGreetResult({ ok: true, msg: `已发送给「${userName}」，用户 App 中将出现此机器人` });
+        setGreetResult({ ok: true, msg: `已发送给「${userName}」，用户 App 中将出现此 Bot` });
         setTargetUserId("");
         setGreetMsg("");
       } else {
@@ -84,13 +84,13 @@ export default function RobotsPage() {
   return (
     <div className="p-6 space-y-5">
       <div>
-        <h1 className="text-lg font-semibold text-[#0F172A]">机器人管理</h1>
-        <p className="mt-0.5 text-xs text-[#94A3B8]">创建客服机器人，用户在 App 给机器人发消息即进入客服流程</p>
+        <h1 className="text-lg font-semibold text-[#0F172A]">Bot 管理</h1>
+        <p className="mt-0.5 text-xs text-[#94A3B8]">创建客服 Bot，用户在 App 给 Bot 发消息即进入客服流程</p>
       </div>
 
-      <RobotForm onCreated={loadRobots} />
+      <BotForm onCreated={loadBots} />
 
-      {/* Robot table */}
+      {/* Bot table */}
       <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
         <table className="w-full text-sm">
           <thead>
@@ -98,30 +98,28 @@ export default function RobotsPage() {
               <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">显示名称</th>
               <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">名称</th>
               <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">IM User ID</th>
-              <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">回调地址</th>
               <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">操作</th>
             </tr>
           </thead>
           <tbody>
-            {robots.map((r) => (
+            {bots.map((r) => (
               <tr key={r.id} className="border-b border-[#F1F5F9] transition hover:bg-[#F8FAFC]">
                 <td className="px-4 py-3 font-medium text-[#0F172A]">{r.displayName}</td>
                 <td className="px-4 py-3 font-mono text-xs text-[#64748B]">{r.name}</td>
                 <td className="px-4 py-3 font-mono text-xs text-[#94A3B8]">{r.imUserId}</td>
-                <td className="px-4 py-3 text-xs text-[#94A3B8] max-w-[200px] truncate">{r.callbackUrl || "—"}</td>
                 <td className="px-4 py-3">
                   <button
-                    onClick={() => { setGreetRobotId(greetRobotId === r.id ? null : r.id); setGreetResult(null); }}
+                    onClick={() => { setGreetBotId(greetBotId === r.id ? null : r.id); setGreetResult(null); }}
                     className="rounded-md bg-[#2563EB]/10 px-2.5 py-1 text-[11px] font-semibold text-[#2563EB] hover:bg-[#2563EB]/20 cursor-pointer"
                   >
-                    {greetRobotId === r.id ? "收起" : "发送欢迎语"}
+                    {greetBotId === r.id ? "收起" : "发送欢迎语"}
                   </button>
                 </td>
               </tr>
             ))}
-            {robots.length === 0 && (
+            {bots.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-[#CBD5E1]">暂无机器人</td>
+                <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#CBD5E1]">暂无 Bot</td>
               </tr>
             )}
           </tbody>
@@ -129,11 +127,11 @@ export default function RobotsPage() {
       </div>
 
       {/* Greet panel */}
-      {greetRobotId && (
+      {greetBotId && (
         <div className="rounded-xl border border-[#DBEAFE] bg-[#EFF6FF] p-4">
           <h3 className="mb-1 text-sm font-semibold text-[#1E40AF]">向用户发送欢迎语</h3>
           <p className="mb-3 text-xs text-[#60A5FA]">
-            机器人会主动给该用户发一条消息，用户的 App 聊天列表中就会出现此机器人
+            Bot 会主动给该用户发一条消息，用户的 App 聊天列表中就会出现此 Bot
           </p>
           {greetResult && (
             <div className={`mb-3 rounded-lg px-3 py-2 text-sm ${greetResult.ok ? "bg-[#DCFCE7] text-[#16A34A]" : "bg-[#FEE2E2] text-[#DC2626]"}`}>

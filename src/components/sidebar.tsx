@@ -32,8 +32,8 @@ const navItems = [
     ),
   },
   {
-    href: "/dashboard/admin/robots",
-    label: "机器人",
+    href: "/dashboard/admin/bots",
+    label: "Bot 管理",
     roles: ["admin"],
     badge: false,
     icon: (

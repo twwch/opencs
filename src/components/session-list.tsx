@@ -8,7 +8,7 @@ interface Session {
   agentId: string | null;
   createdAt: string;
   agent?: { displayName: string } | null;
-  robot?: { displayName: string };
+  bot?: { displayName: string };
   _count?: { messages: number };
 }
 
@@ -53,7 +53,7 @@ export function SessionList({ sessions, activeSessionId, onSelect, onAssign }: S
                   </span>
                 </div>
                 <div className="mt-0.5 flex items-center justify-between">
-                  <span className="text-[10px] text-[#94A3B8]">来自 {s.robot?.displayName || "未知"}</span>
+                  <span className="text-[10px] text-[#94A3B8]">来自 {s.bot?.displayName || "未知"}</span>
                   <button
                     onClick={(e) => { e.stopPropagation(); onAssign(s.id); }}
                     className="rounded-md bg-[#2563EB] px-2.5 py-1 text-[11px] font-semibold text-white opacity-0 shadow-sm transition group-hover:opacity-100 cursor-pointer"
@@ -88,7 +88,7 @@ export function SessionList({ sessions, activeSessionId, onSelect, onAssign }: S
             <div className="min-w-0 flex-1">
               <div className="text-[13px] font-medium text-[#0F172A]">{s.customerName}</div>
               <div className="mt-0.5 flex items-center gap-2 text-[10px] text-[#94A3B8]">
-                <span>{s.robot?.displayName || "未知"}</span>
+                <span>{s.bot?.displayName || "未知"}</span>
                 <span>·</span>
                 <span>{s._count?.messages || 0} 条消息</span>
               </div>

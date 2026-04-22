@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function RobotForm({ onCreated }: { onCreated: () => void }) {
+export function BotForm({ onCreated }: { onCreated: () => void }) {
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
@@ -14,7 +14,7 @@ export function RobotForm({ onCreated }: { onCreated: () => void }) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/robots", {
+      const res = await fetch("/api/admin/bots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, displayName }),
@@ -38,8 +38,8 @@ export function RobotForm({ onCreated }: { onCreated: () => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-xl border border-[#E2E8F0] bg-white p-4">
-      <h3 className="mb-1 text-sm font-semibold text-[#334155]">创建机器人</h3>
-      <p className="mb-3 text-xs text-[#94A3B8]">Webhook 回调地址将自动配置</p>
+      <h3 className="mb-1 text-sm font-semibold text-[#334155]">创建 Bot</h3>
+      <p className="mb-3 text-xs text-[#94A3B8]">Webhook 回调通过 OpenIM 全局配置</p>
       {error && <div className="mb-3 rounded-lg bg-[#FEE2E2] px-3 py-2 text-sm text-[#DC2626]">{error}</div>}
       <div className="flex items-end gap-3">
         <div className="flex-1">
