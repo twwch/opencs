@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     orderBy: { createdAt: "desc" },
     include: {
       agent: { select: { displayName: true } },
-      robot: { select: { displayName: true } },
+      bot: { select: { displayName: true } },
       _count: { select: { messages: true } },
     },
   });

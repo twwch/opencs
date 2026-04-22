@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { eventBus } from "@/lib/event-bus";
-import { robotSendMessage } from "@/lib/wildfire";
+import { imProvider, MessageContentType } from "@/lib/im";
 
 export async function GET(
   request: Request,
@@ -41,7 +41,7 @@ export async function POST(
 
   const csSession = await prisma.session.findUnique({
     where: { id },
-    include: { robot: true },
+    include: { bot: true },
   });
 
   if (!csSession) {
@@ -62,20 +62,16 @@ export async function POST(
     },
   });
 
-  // Send via Wildfire Robot API
+  // Send via OpenIM
   try {
-    const imResult = await robotSendMessage(
-      csSession.robot.imUserId,
-      csSession.robot.secret,
-      csSession.customerId,
-      { type: 1, searchableContent: content }
-    );
-    if (imResult?.code !== undefined && imResult.code !== 0) {
-      console.error("Wildfire send failed:", imResult);
-    }
+    await imProvider.sendMessage({
+      fromBotId: csSession.bot.imUserId,
+      toUserId: csSession.customerId,
+      contentType: MessageContentType.Text,
+      content,
+    });
   } catch (err) {
-    console.error("Wildfire Robot API unreachable:", err);
-    // IM Server 不可用时仍然保存本地消息，但在控制台记录错误
+    console.error("OpenIM send failed:", err);
   }
 
   eventBus.emit("cs-event", {
