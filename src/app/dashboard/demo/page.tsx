@@ -17,7 +17,7 @@ interface Session {
   agentId: string | null;
   createdAt: string;
   agent?: { displayName: string } | null;
-  robot?: { displayName: string };
+  bot?: { displayName: string };
   _count?: { messages: number };
 }
 
@@ -30,7 +30,7 @@ interface Message {
   createdAt: string;
 }
 
-interface Robot {
+interface Bot {
   id: string;
   imUserId: string;
   displayName: string;
@@ -41,22 +41,22 @@ interface Robot {
 // ============================================================
 
 export default function DemoPage() {
-  const [robots, setRobots] = useState<Robot[]>([]);
-  const [selectedRobot, setSelectedRobot] = useState<Robot | null>(null);
+  const [bots, setBots] = useState<Bot[]>([]);
+  const [selectedBot, setSelectedBot] = useState<Bot | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/robots").then((r) => r.json()).then((d) => {
-      setRobots(d.robots || []);
-      if (d.robots?.length > 0) setSelectedRobot(d.robots[0]);
+    fetch("/api/admin/bots").then((r) => r.json()).then((d) => {
+      setBots(d.bots || []);
+      if (d.bots?.length > 0) setSelectedBot(d.bots[0]);
     });
   }, []);
 
-  if (robots.length === 0) {
+  if (bots.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <div className="text-lg font-semibold text-[#0F172A]">请先创建机器人</div>
-          <p className="mt-1 text-sm text-[#94A3B8]">前往机器人管理页面创建一个客服机器人后再来测试</p>
+          <div className="text-lg font-semibold text-[#0F172A]">请先创建 Bot</div>
+          <p className="mt-1 text-sm text-[#94A3B8]">前往 Bot 管理页面创建一个客服 Bot 后再来测试</p>
         </div>
       </div>
     );
@@ -73,19 +73,19 @@ export default function DemoPage() {
             </svg>
             <span className="text-sm font-semibold text-white">客户端模拟器</span>
           </div>
-          {robots.length > 1 && (
+          {bots.length > 1 && (
             <select
-              value={selectedRobot?.imUserId || ""}
-              onChange={(e) => setSelectedRobot(robots.find((r) => r.imUserId === e.target.value) || null)}
+              value={selectedBot?.imUserId || ""}
+              onChange={(e) => setSelectedBot(bots.find((r) => r.imUserId === e.target.value) || null)}
               className="rounded-md bg-white/20 px-2 py-1 text-xs text-white outline-none"
             >
-              {robots.map((r) => (
+              {bots.map((r) => (
                 <option key={r.imUserId} value={r.imUserId} className="text-black">{r.displayName}</option>
               ))}
             </select>
           )}
         </div>
-        {selectedRobot && <CustomerSimulator robot={selectedRobot} />}
+        {selectedBot && <CustomerSimulator bot={selectedBot} />}
       </div>
 
       {/* Right: Agent Workbench */}
@@ -106,7 +106,7 @@ export default function DemoPage() {
 // Customer Simulator (Left Panel)
 // ============================================================
 
-function CustomerSimulator({ robot }: { robot: Robot }) {
+function CustomerSimulator({ bot }: { bot: Bot }) {
   const [customerName, setCustomerName] = useState("测试客户小明");
   const [nameConfirmed, setNameConfirmed] = useState(false);
   const customerId = `demo_${customerName}`;
@@ -116,13 +116,13 @@ function CustomerSimulator({ robot }: { robot: Robot }) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const loadMessages = useCallback(() => {
-    fetch(`/api/test/messages?customerId=${customerId}&robotImId=${robot.imUserId}`)
+    fetch(`/api/test/messages?customerId=${customerId}&botImId=${bot.imUserId}`)
       .then((r) => r.json())
       .then((d) => {
         setMessages(d.messages || []);
         setSessionStatus(d.status || null);
       });
-  }, [customerId, robot.imUserId]);
+  }, [customerId, bot.imUserId]);
 
   // Poll for new messages every 2s
   useEffect(() => {
@@ -147,7 +147,7 @@ function CustomerSimulator({ robot }: { robot: Robot }) {
       body: JSON.stringify({
         customerId,
         customerName,
-        robotImId: robot.imUserId,
+        botImId: bot.imUserId,
         content: text,
       }),
     });
@@ -192,10 +192,10 @@ function CustomerSimulator({ robot }: { robot: Robot }) {
       <div className="flex items-center justify-between bg-[#EDEDED] px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#2563EB] text-xs font-bold text-white">
-            {robot.displayName[0]}
+            {bot.displayName[0]}
           </div>
           <div>
-            <div className="text-sm font-semibold text-[#333]">{robot.displayName}</div>
+            <div className="text-sm font-semibold text-[#333]">{bot.displayName}</div>
             <div className="text-[10px] text-[#999]">
               {sessionStatus === "active" ? "客服已接入" : sessionStatus === "waiting" ? "等待接入中..." : "发送消息开始咨询"}
             </div>
@@ -214,7 +214,7 @@ function CustomerSimulator({ robot }: { robot: Robot }) {
       <div className="flex-1 space-y-3 overflow-auto px-4 py-3">
         {messages.length === 0 && (
           <div className="pt-20 text-center text-xs text-[#999]">
-            以「{customerName}」身份给「{robot.displayName}」发消息
+            以「{customerName}」身份给「{bot.displayName}」发消息
           </div>
         )}
         {messages.map((msg) => {
@@ -234,7 +234,7 @@ function CustomerSimulator({ robot }: { robot: Robot }) {
               <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
                 isCustomer ? "bg-[#95EC69] text-[#333]" : "bg-[#2563EB] text-white"
               }`}>
-                {isCustomer ? "我" : robot.displayName[0]}
+                {isCustomer ? "我" : bot.displayName[0]}
               </div>
               <div className={`relative max-w-[65%] rounded-lg px-3 py-2 text-[13px] leading-relaxed ${
                 isCustomer ? "bg-[#95EC69] text-[#333]" : "bg-white text-[#333]"

@@ -350,8 +350,8 @@ export default function PreviewPage() {
                 </tr></thead>
                 <tbody>
                   {[
-                    { d: "客服小助手", n: "cs_bot", id: "robot_abc123", cb: "https://cs.example.com/hook", ok: true },
-                    { d: "售后机器人", n: "after_sale", id: "robot_def456", cb: "—", ok: false },
+                    { d: "客服小助手", n: "cs_bot", id: "bot_abc123", cb: "https://cs.example.com/hook", ok: true },
+                    { d: "售后机器人", n: "after_sale", id: "bot_def456", cb: "—", ok: false },
                   ].map((r) => (
                     <tr key={r.n} style={{ borderBottom: `1px solid ${c.borderLight}` }}>
                       <td className="px-4 py-3 font-medium" style={{ color: c.text }}>{r.d}</td>
