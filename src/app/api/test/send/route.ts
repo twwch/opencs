@@ -4,25 +4,25 @@ import { eventBus } from "@/lib/event-bus";
 
 // Simulate a customer sending a message (like the webhook would)
 export async function POST(request: Request) {
-  const { customerId, customerName, robotImId, content } = await request.json();
+  const { customerId, customerName, botImId, content } = await request.json();
 
-  if (!customerId || !robotImId || !content) {
+  if (!customerId || !botImId || !content) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  const robot = await prisma.robot.findUnique({
-    where: { imUserId: robotImId },
+  const bot = await prisma.bot.findUnique({
+    where: { imUserId: botImId },
   });
 
-  if (!robot) {
-    return NextResponse.json({ error: "Robot not found" }, { status: 404 });
+  if (!bot) {
+    return NextResponse.json({ error: "Bot not found" }, { status: 404 });
   }
 
   // Find or create session
   let session = await prisma.session.findFirst({
     where: {
       customerId,
-      robotId: robot.id,
+      botId: bot.id,
       status: { in: ["waiting", "active"] },
     },
   });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       data: {
         customerId,
         customerName: customerName || customerId,
-        robotId: robot.id,
+        botId: bot.id,
         status: "waiting",
       },
     });

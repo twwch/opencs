@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "野火客服工作台",
-  description: "Customer service workbench powered by Wildfire IM",
+  description: "Customer service workbench powered by OpenIM",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

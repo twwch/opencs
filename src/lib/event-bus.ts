@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 
-const key = Symbol.for("wildfire-cs.eventBus");
+const key = Symbol.for("opencs.eventBus");
 const g = globalThis as Record<symbol, EventEmitter | undefined>;
 
 if (!g[key]) {

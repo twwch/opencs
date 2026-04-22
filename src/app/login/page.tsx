@@ -24,7 +24,7 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
-        <div className="text-xs text-white/20">Wildfire IM · v1.0</div>
+        <div className="text-xs text-white/20">OpenIM · v1.0</div>
       </div>
 
       {/* Right form */}

@@ -2,7 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "wildfire-cs-default-secret"
+  process.env.JWT_SECRET || "opencs-default-secret"
 );
 
 const COOKIE_NAME = "wf-cs-token";

@@ -4,24 +4,24 @@ import { prisma } from "@/lib/prisma";
 // Get messages for a customer (no auth required, test only)
 export async function GET(request: NextRequest) {
   const customerId = request.nextUrl.searchParams.get("customerId");
-  const robotImId = request.nextUrl.searchParams.get("robotImId");
+  const botImId = request.nextUrl.searchParams.get("botImId");
 
-  if (!customerId || !robotImId) {
-    return NextResponse.json({ error: "Missing customerId or robotImId" }, { status: 400 });
+  if (!customerId || !botImId) {
+    return NextResponse.json({ error: "Missing customerId or botImId" }, { status: 400 });
   }
 
-  const robot = await prisma.robot.findUnique({
-    where: { imUserId: robotImId },
+  const bot = await prisma.bot.findUnique({
+    where: { imUserId: botImId },
   });
 
-  if (!robot) {
+  if (!bot) {
     return NextResponse.json({ messages: [] });
   }
 
   const session = await prisma.session.findFirst({
     where: {
       customerId,
-      robotId: robot.id,
+      botId: bot.id,
       status: { in: ["waiting", "active"] },
     },
   });

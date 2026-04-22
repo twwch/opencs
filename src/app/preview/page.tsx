@@ -157,7 +157,7 @@ export default function PreviewPage() {
                   ))}
                 </div>
               </div>
-              <div className="text-xs text-white/20">Wildfire IM · v1.0</div>
+              <div className="text-xs text-white/20">OpenIM · v1.0</div>
             </div>
             <div className="flex flex-1 items-center justify-center px-10">
               <div className="w-full max-w-[340px]">
